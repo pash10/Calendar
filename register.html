@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Register - Gandalf's AeroSpectra Emporium</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="index">
+    <nav id="navbar">
+        <ul>
+            <li id="navHome"><a href="index.html" id="homeLink">Home</a></li>
+            <li id="navLogin"><a href="login.html" id="loginLink">Login</a></li>
+            <li id="navRegister"><a href="register.html" id="registerLink">Register</a></li>
+            <li id="navLiveView"><a href="proTestLive.html" id="liveViewLink">Live View</a></li>
+            <li id="navBarQueris"><a href="post.html" id="QuerisButton">CustomerQueriesLink</a></li>
+            <li id="navLogout"  class="rightmost"><a href="#" type="Logout" id="logoutButton">Logout</a></li>
+        </ul>
+    </nav>
+    
+    <div id="main">
+        <h1 id="welcomeHeader">Register for Gandalf's AeroSpectra Emporium</h1>
+
+        <div id="section_do_space_this_fix">
+            <form id="registerForm">
+
+                <!-- Username Input -->
+                <div class="section">
+                    <label for="username">Username: </label>
+                    <input type="text" id="username" name="username"  placeholder="Enter your username" />
+                </div>
+            
+                <!-- Email Input -->
+                <div class="section">
+                    <label for="email">Email: </label>
+                    <input type="text" id="email" name="email" placeholder="example@email.com" />
+                </div>
+            
+                <!-- Confirm Email Input -->
+                <div class="section">
+                    <label for="confirmEmail">Confirm Email: </label>
+                    <input type="text" id="ConfirmEmail" name="confirmEmail" placeholder="Re-enter your email" />
+                </div>
+            
+                <!-- Password Input -->
+                <div class="section">
+                    <label for="password">Password: </label>
+                    <input type="password" id="password" name="password"  placeholder="Enter a strong password" />
+                </div>
+            
+                <!-- Confirm Password Input -->
+                <div class="section">
+                    <label for="confirmPassword">Confirm Password: </label>
+                    <input type="password" id="ConfirmPassword" name="confirmPassword"  placeholder="Re-enter your password" />
+                </div>
+            
+             
+            
+                <!-- Error Message Display -->
+                <div class="section">
+                    <p id="error" style="color: red;"></p>
+                </div>
+        
+                <!-- Submit Button -->
+                <div class="section" id="buttonToSend">
+                    <input type="submit" id="submitButton" value="Register" />
+                </div>
+            </form>
+            
+        </div>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+
+
+    
+    </div>
+    <footer id="globalFooter">
+        <p>© 2023 Gandalf's AeroSpectra Emporium. All Rights Reserved.</p>
+        <P>All hail the cretor <a href="https://en.wikipedia.org/wiki/J._R._R._Tolkien">J._R._R._Tolkien</a></P>
+    </footer>
+    <script src="/js/index.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
+    <script src="/js/firebase.js"></script>
+    <script src="/js/fireBaseFunc.js"></script>
+    <script src="/js/register.js"></script>
+</body>
+
+</html>

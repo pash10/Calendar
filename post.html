@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Calendar</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" rel="stylesheet" />
+    <!-- Bootstrap CSS for Modal -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body class="index">
+    <nav id="navbar">
+        <ul>
+            <li id="navImageLink"><a href="https://en.wikipedia.org/wiki/J._R._R._Tolkien"><img src="/img/Gandalf.webp" alt="gandalf-sax"></a></li>
+            <li id="navHome"><a href="index.html" id="homeLink">Home</a></li>
+            <li id="navLogin"><a href="login.html" id="loginLink">Login</a></li>
+            <li id="navRegister"><a href="register.html" id="registerLink">Register</a></li>
+            <li id="navLiveView"><a href="proTestLive.html" id="liveViewLink">Live View</a></li>
+            <li id="navBarQueris"><a href="post.html" id="QuerisButton">CustomerQueriesLink</a></li>
+            
+            <li id="navLogout"  class="rightmost"><a href="#" type="Logout" id="logoutButton">Logout</a></li>
+        </ul>
+    </nav>
+    <form id="addEventForm">
+        <input type="text" id="eventTitle" placeholder="Event Title" required />
+        <input type="date" id="eventStart" placeholder="Start Date" required />
+        <input type="date" id="eventEnd" placeholder="End Date" required />
+        <label><input type="checkbox" id="isBiWeekly" /> Bi-weekly event</label>
+        <label>Recur every <input type="number" id="recurInterval" min="1" placeholder="Number of weeks" /> week(s)</label>
+        <label>For <input type="number" id="durationDays" min="1" placeholder="Duration in days" /> day(s)</label>
+        <button type="submit">Add Event</button>
+    </form>
+
+    <!-- Context Menu -->
+    <div id="contextMenu" class="context-menu" style="display: none;">
+        <ul>
+            <li id="editEvent">Edit</li>
+            <li id="deleteEvent">Delete</li>
+        </ul>
+    </div>
+
+    <!-- Event Edit Modal -->
+    <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="editEventModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form id="editEventForm">
+              <div class="form-group">
+                <label for="editEventTitle">Event Title</label>
+                <input type="text" class="form-control" id="editEventTitle">
+              </div>
+              <div class="form-group">
+                <label for="editEventEnd">End Date</label>
+                <input type="date" class="form-control" id="editEventEnd">
+              </div>
+              <div class="form-group">
+                <label for="editEventDuration">Duration (days)</label>
+                <input type="number" class="form-control" id="editEventDuration">
+              </div>
+              <div class="form-group">
+                <label for="editEventRecur">Recurrence (weeks)</label>
+                <input type="number" class="form-control" id="editEventRecur">
+              </div>
+              <!-- Hidden input for event ID -->
+              <input type="hidden" id="editEventId">
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="saveEventChanges">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="calendar"></div>
+
+  
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-database-compat.js"></script>
+    <script src="/js/firebase.js"></script>
+    <script src="/js/fireBaseFunc.js"></script>
+    <script src="/js/singout.js"></script>
+      <!-- Required Scripts -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+      <!-- Bootstrap Bundle JS for Modal -->
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+      <script src="/js/script.js"></script> <!-- Your custom JS -->
+      <script src="/js/index.js"></script>
+</body>
+</html>

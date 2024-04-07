@@ -1,0 +1,38 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+#addEventForm {
+    margin-bottom: 20px;
+}
+
+#calendar {
+    max-width: 900px;
+    margin: 0 auto;
+}
+.context-menu {
+    position: absolute;
+    z-index: 1000;
+    width: 120px;
+    background: white;
+    border: 1px solid #666;
+    border-radius: 5px;
+    padding: 10px 0;
+}
+
+.context-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.context-menu ul li {
+    padding: 10px 15px;
+    cursor: pointer;
+}
+
+.context-menu ul li:hover {
+    background-color: #f0f0f0;
+}
