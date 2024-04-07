@@ -34,31 +34,51 @@ function loadUserEvents(callback) {
     // Add recurring or single events based on form inputs
     $('#addEventForm').submit(function(e) {
         e.preventDefault();
-
+    
+        var user = firebase.auth().currentUser;
+        if (!user) {
+            console.error("User not authenticated");
+            return;
+        }
+    
         var title = $('#eventTitle').val();
         var start = $('#eventStart').val();
-        var untilDate = $('#eventEnd').val();
-        var recurInterval = $('#recurInterval').val() ? parseInt($('#recurInterval').val(), 10) : null;
+        var end = $('#eventEnd').val() || start; // Default end date is start date
+        var isBiWeekly = $('#isBiWeekly').is(':checked');
+        var recurInterval = isBiWeekly ? 2 : null; // 2 weeks for bi-weekly recurrence
         var durationDays = $('#durationDays').val() ? parseInt($('#durationDays').val(), 10) : 0;
-
-        if (recurInterval && durationDays) {
+        var untilDate = $('#eventEnd').val();
+    
+        // If Bi-weekly event is checked, handle as recurring event
+        if (isBiWeekly && durationDays) {
             addRecurringEvents(title, start, recurInterval, durationDays, untilDate);
         } else {
-            $('#calendar').fullCalendar('renderEvent', {
+            // Handle adding a single event
+            var eventData = {
                 title: title,
                 start: start,
-                end: moment(start).add(durationDays, 'days').format(),
+                end: end,
                 allDay: true
-            }, true); // Stick the event
+            };
+    
+            // Save the event to Firebase
+            firebase.database().ref('events/' + user.uid).push(eventData).then(() => {
+                console.log("Event added successfully.");
+                $('#calendar').fullCalendar('refetchEvents'); // Reload the events
+            }).catch(error => {
+                console.error("Error adding event:", error);
+            });
         }
-
+    
         // Clear form fields
         $('#eventTitle').val('');
         $('#eventStart').val('');
+        $('#eventEnd').val('');
         $('#recurInterval').val('');
         $('#durationDays').val('');
-        $('#eventEnd').val('');
+        $('#isBiWeekly').prop('checked', false); // Reset the checkbox
     });
+    
 
     // Show context menu
     function showContextMenu(e, event) {
@@ -68,17 +88,26 @@ function loadUserEvents(callback) {
             top: e.pageY + 'px'
         });
 
-        // Delete event
+        // Implement delete functionality
         $('#deleteEvent').off('click').on('click', function() {
-            $('#calendar').fullCalendar('removeEvents', event._id);
+            var user = firebase.auth().currentUser;
+            if (user) {
+                firebase.database().ref('events/' + user.uid + '/' + event.id).remove().then(() => {
+                    console.log("Event removed successfully.");
+                    $('#calendar').fullCalendar('refetchEvents'); // Reload the events
+                }).catch(error => {
+                    console.error("Error removing event:", error);
+                });
+            }
             $('#contextMenu').hide();
         });
 
-        // Edit event
+
+        // Load event details into the edit modal
         $('#editEvent').off('click').on('click', function() {
-            $('#contextMenu').hide();
             fillEditModal(event);
             $('#editEventModal').modal('show');
+            $('#contextMenu').hide();
         });
     }
 
@@ -96,21 +125,23 @@ function loadUserEvents(callback) {
     // Save changes from the edit modal
     $('#saveEventChanges').click(function() {
         var eventId = $('#editEventId').val();
-        var updatedTitle = $('#editEventTitle').val();
-        var updatedEnd = $('#editEventEnd').val();
-        var updatedDuration = $('#editEventDuration').val();
-        var updatedRecur = $('#editEventRecur').val();
+        var updatedEvent = {
+            title: $('#editEventTitle').val(),
+            start: $('#editEventStart').val(),
+            end: $('#editEventEnd').val() || $('#editEventStart').val(),
+            allDay: true
+        };
 
-        var event = $('#calendar').fullCalendar('clientEvents', eventId)[0];
-        if (event) {
-            event.title = updatedTitle;
-            event.end = updatedEnd;
-            // Update duration and recurrence if you store these with the event
-            // FullCalendar itself doesn't track these values by default
-            $('#calendar').fullCalendar('updateEvent', event);
+        var user = firebase.auth().currentUser;
+        if (user) {
+            firebase.database().ref('events/' + user.uid + '/' + eventId).update(updatedEvent).then(() => {
+                console.log("Event updated successfully.");
+                $('#editEventModal').modal('hide');
+                $('#calendar').fullCalendar('refetchEvents'); // Reload the events
+            }).catch(error => {
+                console.error("Error updating event:", error);
+            });
         }
-
-        $('#editEventModal').modal('hide');
     });
 
     // Hide context menu on document click
@@ -120,44 +151,41 @@ function loadUserEvents(callback) {
 
     // Add recurring events
     function addRecurringEvents(title, start, recurInterval, durationDays, untilDate) {
+        var user = firebase.auth().currentUser;
+        if (!user) {
+            console.error("User not authenticated");
+            return;
+        }
+    
         var startDate = moment(start);
         var endDate = moment(start).add(durationDays, 'days');
-
         var loopEndDate = untilDate ? moment(untilDate) : moment().add(1, 'year');
-
+        var eventsRef = firebase.database().ref('events/' + user.uid);
+    
         while (startDate.isBefore(loopEndDate)) {
-            $('#calendar').fullCalendar('renderEvent', {
+            var newEvent = {
                 title: title,
                 start: startDate.format(),
                 end: endDate.format(),
                 allDay: true
-            }, true);
-
+            };
+    
+            // Save each occurrence to Firebase
+            eventsRef.push(newEvent).catch(error => {
+                console.error("Error adding recurring event:", error);
+            });
+    
+            // Prepare for the next iteration
             startDate.add(recurInterval, 'weeks');
             endDate = moment(startDate).add(durationDays, 'days');
         }
+    
+        // After all events are added, refetch them to update the calendar display
+        $('#calendar').fullCalendar('refetchEvents');
     }
-});
+    
 
-function loadUserEvents() {
-    var user = firebase.auth().currentUser;
-    if (user) {
-        var eventsRef = firebase.database().ref('events/' + user.uid);
-        eventsRef.once('value', (snapshot) => {
-            var events = [];
-            snapshot.forEach((childSnapshot) => {
-                var event = childSnapshot.val();
-                event.id = childSnapshot.key; // Use Firebase key as event ID
-                events.push(event);
-            });
-            // Now use the events array to populate the calendar
-            $('#calendar').fullCalendar('removeEvents'); // Remove existing events
-            $('#calendar').fullCalendar('addEventSource', events); // Add new events
-        }).catch((error) => {
-            console.error('Error loading events:', error);
-        });
-    }
-}
+
 
 // Call loadUserEvents function after user login or as part of your page initialization logic
 // Make sure this is called after Firebase authentication state is confirmed
@@ -171,4 +199,5 @@ firebase.auth().onAuthStateChanged(user => {
         // User is signed out, clear the calendar
         $('#calendar').fullCalendar('removeEvents');
     }
+});
 });
